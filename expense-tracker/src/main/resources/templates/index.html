@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Expense Tracker</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        input, button { margin: 5px; }
+    </style>
+</head>
+<body>
+<h1>Expense Tracker</h1>
+
+<form method="post" th:action="@{/add}" th:object="${expense}">
+    <input th:field="*{title}" placeholder="Title" required />
+    <input th:field="*{category}" placeholder="Category" required />
+    <input th:field="*{amount}" placeholder="Amount" required />
+    <input th:field="*{date}" type="date" required />
+    <button type="submit">Add</button>
+</form>
+
+<form method="get" th:action="@{/}">
+    <input type="text" name="category" placeholder="Filter by category" />
+    <button type="submit">Filter</button>
+</form>
+
+<h3>Total Spent: ₹<span th:text="${total}"></span></h3>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Amount</th>
+        <th>Date</th>
+        <th>Action</th>
+    </tr>
+    <tr th:each="exp : ${expenses}">
+        <td th:text="${exp.title}"></td>
+        <td th:text="${exp.category}"></td>
+        <td th:text="${exp.amount}"></td>
+        <td th:text="${exp.date}"></td>
+        <td><a th:href="@{/delete/{id}(id=${exp.id})}">Delete</a></td>
+    </tr>
+</table>
+</body>
+</html>
