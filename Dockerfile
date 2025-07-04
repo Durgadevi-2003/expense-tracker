@@ -1,27 +1,26 @@
-# Use Maven image with JDK 17 and Alpine Linux
+# ---- Build Stage ----
 FROM maven:3.9.5-eclipse-temurin-17-alpine AS build
 
-# Set working directory
+# Set working directory inside the nested folder
 WORKDIR /app
 
-# Copy all files to the container
-COPY . /app
+# Copy only the inner expense-tracker folder where pom.xml exists
+COPY expense-tracker /app
 
-# Build the project (skip tests for faster build)
+# Run Maven build inside that subfolder
 RUN mvn clean package -DskipTests
 
-# Use lightweight JDK image to run the app
+# ---- Run Stage ----
 FROM eclipse-temurin:17-jdk-alpine
 
-# Set working directory
+# Working directory inside runtime image
 WORKDIR /app
 
-# Copy the JAR from the builder image
+# Copy final jar from build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose dynamic port (Render uses $PORT env)
+# Expose port (Render sets $PORT)
 EXPOSE 8080
 
-# Run the jar file
+# Run the app
 CMD ["java", "-jar", "app.jar"]
-
